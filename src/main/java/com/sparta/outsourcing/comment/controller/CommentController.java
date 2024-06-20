@@ -4,7 +4,10 @@ import com.sparta.outsourcing.comment.dto.CommentRequestDTO;
 import com.sparta.outsourcing.comment.dto.CommentResponseDTO;
 import com.sparta.outsourcing.comment.service.CommentService;
 import com.sparta.outsourcing.security.UserDetailsImpl;
+import com.sparta.outsourcing.user.dto.CommonResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +22,10 @@ public class CommentController {
 
     //Comment 전체 조회
     @GetMapping("/boards/{boardId}/comments")
-    public List<CommentResponseDTO> viewAllComment(@PathVariable(value = "boardId") Long boardId) {
-        return commentService.viewAllComment(boardId);
+    public ResponseEntity<CommonResponse<List<CommentResponseDTO>>> viewAllComment(@PathVariable(value = "boardId") Long boardId) {
+        List<CommentResponseDTO> responseDTOList = commentService.viewAllComment(boardId);
+        CommonResponse<List<CommentResponseDTO>> response = new CommonResponse<>("댓글조회 성공", HttpStatus.OK.value(),responseDTOList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     //Comment 작성
