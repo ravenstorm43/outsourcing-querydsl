@@ -2,12 +2,15 @@ package com.sparta.outsourcing.user.service;
 
 import com.sparta.outsourcing.exception.ConflictException;
 import com.sparta.outsourcing.user.dto.SignupRequestDto;
+import com.sparta.outsourcing.user.dto.UpdateUserRequestDto;
+import com.sparta.outsourcing.user.dto.UserResponseDto;
 import com.sparta.outsourcing.user.entity.User;
 import com.sparta.outsourcing.user.entity.UserStatus;
 import com.sparta.outsourcing.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -31,5 +34,20 @@ public class UserService {
         });
 
         userRepository.save(new User(requestDto, password));
+    }
+    public UserResponseDto getUser(User user) {
+        return new UserResponseDto(user);
+    }
+
+    @Transactional
+    public UserResponseDto updateUser(Long id, UpdateUserRequestDto requestDto) {
+        User user = findById(id);
+        user.updateUser(requestDto);
+        return new UserResponseDto(user);
+    }
+    public User findById(Long id) {
+        return userRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException()
+        );
     }
 }
