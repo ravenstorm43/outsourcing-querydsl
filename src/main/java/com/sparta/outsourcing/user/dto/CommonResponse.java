@@ -11,7 +11,13 @@ public class CommonResponse<T> {
     private T data;
 
     public CommonResponse(String message, int httpStatusCode) {
-        this.httpStatusCode = httpStatusCode;
         this.message = message;
+        this.httpStatusCode = httpStatusCode;
+    }
+
+    public CommonResponse(String message, int httpStatusCode, T data) {
+        this.message = message;
+        this.httpStatusCode = httpStatusCode;
+        this.data = data;
     }
 }
