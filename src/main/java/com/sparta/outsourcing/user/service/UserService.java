@@ -1,9 +1,7 @@
 package com.sparta.outsourcing.user.service;
 
 import com.sparta.outsourcing.exception.ConflictException;
-import com.sparta.outsourcing.exception.IncorrectPasswordException;
 import com.sparta.outsourcing.user.dto.SignupRequestDto;
-import com.sparta.outsourcing.user.dto.UpdatePasswordDto;
 import com.sparta.outsourcing.user.dto.UpdateUserRequestDto;
 import com.sparta.outsourcing.user.dto.UserResponseDto;
 import com.sparta.outsourcing.user.entity.User;
@@ -37,8 +35,7 @@ public class UserService {
 
         userRepository.save(new User(requestDto, password));
     }
-    public UserResponseDto getUser(Long id) {
-        User user = findById(id);
+    public UserResponseDto getUser(User user) {
         return new UserResponseDto(user);
     }
 
@@ -47,19 +44,6 @@ public class UserService {
         User user = findById(id);
         user.updateUser(requestDto);
         return new UserResponseDto(user);
-    }
-    public void updatePassword(Long id, UpdatePasswordDto requestDto) {
-        User user = findById(id);
-
-        if (!passwordEncoder.matches(requestDto.getOldpassword(), user.getPassword())) {
-            throw new IncorrectPasswordException("비밀번호가 일치하지 않습니다.");
-        }
-
-        if (passwordEncoder.matches(requestDto.getNewpassword(), user.getPassword())) {
-            throw new CustomException(ErrorCode.DUPLICATE_PASSWORD);
-        }
-
-        user.updatePassword(passwordEncoder.encode(requestDto.getNewpassword()));
     }
     public User findById(Long id) {
         return userRepository.findById(id).orElseThrow(
