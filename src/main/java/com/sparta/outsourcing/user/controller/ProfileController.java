@@ -27,4 +27,11 @@ public class ProfileController {
         CommonResponse<UserResponseDto> response = new CommonResponse<>("프로필 수정 완료", 200, userService.updateUser(userDetails.getUser().getId(), requestDto));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    @PutMapping("/profile/password")
+    public ResponseEntity<CommonResponse<Void>> resetPassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody UpdatePasswordDto requestDto) {
+        userService.updatePassword(userDetails.getUser().getId(), requestDto);
+        CommonResponse<Void> response = new CommonResponse<>("비밀번호 변경 완료", 200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }
