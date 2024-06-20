@@ -10,7 +10,7 @@ import com.sparta.outsourcing.user.dto.UpdateUserRequestDto;
 @Getter
 @Table(name = "user")
 @NoArgsConstructor
-public class User {
+public class User extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

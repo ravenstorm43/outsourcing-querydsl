@@ -15,10 +15,17 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/user/signup")
+    @PostMapping("/users/signup")
     public ResponseEntity<CommonResponse<Void>> signup(@RequestBody SignupRequestDto requestDto) {
         CommonResponse<Void> response = new CommonResponse<>("회원가입 성공", 200);
         userService.signup(requestDto);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @GetMapping("/board/test")
+    public ResponseEntity<String> test() {
+        System.out.println("test 입니다.");
+        return new ResponseEntity<>("토큰 테스트", HttpStatus.OK);
+    }
+
 }

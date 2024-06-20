@@ -1,5 +1,6 @@
 package com.sparta.outsourcing.exception;
 
+import com.sparta.outsourcing.exception.dto.CommonExceptionResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

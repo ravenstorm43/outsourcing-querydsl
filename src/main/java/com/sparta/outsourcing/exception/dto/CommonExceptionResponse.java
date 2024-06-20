@@ -1,4 +1,4 @@
-package com.sparta.outsourcing.exception;
+package com.sparta.outsourcing.exception.dto;
 
 import lombok.Getter;
 
