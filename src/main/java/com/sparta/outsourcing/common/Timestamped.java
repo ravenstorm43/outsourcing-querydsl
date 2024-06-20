@@ -1,4 +1,4 @@
-package com.sparta.outsourcing.user.entity;
+package com.sparta.outsourcing.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

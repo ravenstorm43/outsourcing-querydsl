@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import com.sparta.outsourcing.user.entity.Timestamped;
+import com.sparta.outsourcing.common.Timestamped;
 import com.sparta.outsourcing.user.entity.User;
 
 @Entity
