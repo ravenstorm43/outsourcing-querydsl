@@ -1,5 +1,6 @@
 package com.sparta.outsourcing.comment.entity;
 
+import com.sparta.outsourcing.board.entity.Board;
 import com.sparta.outsourcing.comment.dto.CommentRequestDTO;
 import com.sparta.outsourcing.user.entity.Timestamped;
 import com.sparta.outsourcing.user.entity.User;
