@@ -2,7 +2,6 @@ package com.sparta.outsourcing.exception;
 
 import com.sparta.outsourcing.exception.dto.CommonExceptionResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,9 +35,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<CommonExceptionResponse> forbiddenException(NotFoundException ex) {
+    public ResponseEntity<CommonExceptionResponse> notFoundException(NotFoundException ex) {
         log.error("NotFoundException : {}", ex.getMessage());
         CommonExceptionResponse response = new CommonExceptionResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(IncorrectPasswordException.class)
+    public ResponseEntity<CommonExceptionResponse> incorrectPasswordException(IncorrectPasswordException ex) {
+        log.error("IncorrectPasswordException : {}", ex.getMessage());
+        CommonExceptionResponse response = new CommonExceptionResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

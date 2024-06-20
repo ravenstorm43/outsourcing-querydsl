@@ -1,5 +1,6 @@
 package com.sparta.outsourcing.user.entity;
 
+import com.sparta.outsourcing.common.Timestamped;
 import com.sparta.outsourcing.user.dto.SignupRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
