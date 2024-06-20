@@ -2,6 +2,7 @@ package com.sparta.outsourcing.comment.controller;
 
 import com.sparta.outsourcing.comment.dto.CommentRequestDTO;
 import com.sparta.outsourcing.comment.dto.CommentResponseDTO;
+import com.sparta.outsourcing.comment.entity.Comment;
 import com.sparta.outsourcing.comment.service.CommentService;
 import com.sparta.outsourcing.security.UserDetailsImpl;
 import com.sparta.outsourcing.user.dto.CommonResponse;
@@ -30,8 +31,13 @@ public class CommentController {
 
     //Comment 작성
     @PostMapping("/boards/{boardId}/comments")
-    public CommentResponseDTO createComment(@PathVariable(value = "boardId") Long boardId, @RequestBody CommentRequestDTO commentRequestDTO, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return commentService.createComment(boardId, commentRequestDTO, userDetails.getUser());
+    public ResponseEntity<CommonResponse<CommentResponseDTO>> createComment(@PathVariable(value = "boardId") Long boardId,
+                                            @RequestBody CommentRequestDTO commentRequestDTO,
+                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        CommentResponseDTO comment = commentService.createComment(boardId, commentRequestDTO, userDetails.getUser());
+        CommonResponse<CommentResponseDTO> response = new CommonResponse<>("댓글이 작성되었습니다.", HttpStatus.CREATED.value(),comment);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+
     }
 
 

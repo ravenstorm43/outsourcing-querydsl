@@ -1,5 +1,7 @@
 package com.sparta.outsourcing.comment.service;
 
+import com.sparta.outsourcing.board.entity.Board;
+import com.sparta.outsourcing.board.repository.BoardRepository;
 import com.sparta.outsourcing.comment.dto.CommentRequestDTO;
 import com.sparta.outsourcing.comment.dto.CommentResponseDTO;
 import com.sparta.outsourcing.comment.entity.Comment;
@@ -14,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentService {
 
+    private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
 
 

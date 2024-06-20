@@ -13,7 +13,7 @@ public class CommentResponseDTO {
     public CommentResponseDTO(Comment comment) {
         this.id = comment.getId();
         this.comment = comment.getComment();
-        this.boardId = comment.getBoard().getId;
+        this.boardId = comment.getBoard().getId();
         this.userId = comment.getUser().getId();
     }
 }
