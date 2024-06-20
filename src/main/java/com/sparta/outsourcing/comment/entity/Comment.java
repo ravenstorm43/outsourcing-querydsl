@@ -1,5 +1,6 @@
 package com.sparta.outsourcing.comment.entity;
 
+import com.sparta.outsourcing.user.entity.Timestamped;
 import com.sparta.outsourcing.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(name = "comments")
-public class Comment {
+public class Comment extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
