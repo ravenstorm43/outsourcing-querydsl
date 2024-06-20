@@ -1,17 +1,18 @@
 package com.sparta.outsourcing.comment.service;
 
-import com.sparta.outsourcing.comment.dto.CommentRequestDTO;
 import com.sparta.outsourcing.comment.dto.CommentResponseDTO;
 import com.sparta.outsourcing.comment.entity.Comment;
 import com.sparta.outsourcing.comment.repository.CommentRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CommentService {
 
-    private CommentRepository commentRepository;
+    private final CommentRepository commentRepository;
 
 
     public List<CommentResponseDTO> viewAllComment(Long boardId) {
