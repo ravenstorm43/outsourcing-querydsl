@@ -6,6 +6,7 @@ import com.sparta.outsourcing.board.dto.BoardListResponseDto;
 import com.sparta.outsourcing.board.dto.BoardUpdateRequest;
 import com.sparta.outsourcing.board.entity.Board;
 import com.sparta.outsourcing.board.repository.BoardRepository;
+import com.sparta.outsourcing.common.AnonymousNameGenerator;
 import com.sparta.outsourcing.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,7 @@ public class BoardService {
         board.setTitle(request.getTitle());
         board.setContent(request.getContent());
         board.setUser(user);
+        board.setGeneratedname(AnonymousNameGenerator.nameGenerate());
         Board savedBoard = boardRepository.save(board);
         return savedBoard.getId();
     }
@@ -46,7 +48,7 @@ public class BoardService {
                 .map(board -> new BoardListResponseDto.BoardData(
                         board.getId(),
                         board.getTitle(),
-                        board.getUser().getUsername(),
+                        board.getGeneratedname(),
                         board.getUpdatedAt()
                 ))
                 .collect(Collectors.toList());
@@ -64,7 +66,7 @@ public class BoardService {
             BoardDetailResponseDto.BoardData boardData = new BoardDetailResponseDto.BoardData(
                     board.getTitle(),
                     board.getContent(),
-                    board.getUser().getUsername(),
+                    board.getGeneratedname(),
                     board.getUpdatedAt()
             );
             return new BoardDetailResponseDto(200, "게시글 조회 성공", boardData);

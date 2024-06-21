@@ -18,6 +18,8 @@ public class Board extends Timestamped {
 
     private String title;
 
+    private String generatedname;
+
     @Column(columnDefinition = "TEXT")
     private String content;
 
