@@ -8,6 +8,7 @@ import com.sparta.outsourcing.user.dto.CommonResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +49,15 @@ public class CommentController {
         CommentResponseDTO comment = commentService.updateComment(boardId, commentId, commentRequestDTO, userDetails.getUser());
         CommonResponse<CommentResponseDTO> response = new CommonResponse<>("댓글 수정이 완료되었습니다.", HttpStatus.OK.value(), comment);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    //Comment 삭제
+    @DeleteMapping("/boards/{boardId}/comments/{commentId}")
+    public ResponseEntity<String> deleteComment(@PathVariable(value = "boardId") Long boardId,
+                                                @PathVariable(value = "commentId") Long commentId,
+                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        commentService.deleteComment(boardId, commentId, userDetails.getUser());
+        return ResponseEntity.ok("댓글이 삭제 되었습니다.");
     }
 
 

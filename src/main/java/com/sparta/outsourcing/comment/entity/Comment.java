@@ -2,6 +2,7 @@ package com.sparta.outsourcing.comment.entity;
 
 import com.sparta.outsourcing.board.entity.Board;
 import com.sparta.outsourcing.comment.dto.CommentRequestDTO;
+import com.sparta.outsourcing.common.AnonymousNameGenerator;
 import com.sparta.outsourcing.common.Timestamped;
 import com.sparta.outsourcing.user.entity.User;
 import jakarta.persistence.*;
@@ -26,6 +27,8 @@ public class Comment extends Timestamped {
     @JoinColumn(name = "board_id")
     private Board board;
 
+    private String generatedname;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -33,6 +36,7 @@ public class Comment extends Timestamped {
     public Comment(Board board, CommentRequestDTO commentRequestDTO, User user){
         this.board = board;
         this.comment = commentRequestDTO.getComment();
+        this.generatedname = AnonymousNameGenerator.nameGenerate();
         this.user = user;
     }
 
