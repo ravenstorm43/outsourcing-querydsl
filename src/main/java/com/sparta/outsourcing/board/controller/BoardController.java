@@ -3,6 +3,7 @@ package com.sparta.outsourcing.board.controller;
 import com.sparta.outsourcing.board.dto.BoardCreateRequest;
 import com.sparta.outsourcing.board.dto.BoardDetailResponseDto;
 import com.sparta.outsourcing.board.dto.BoardListResponseDto;
+import com.sparta.outsourcing.board.dto.BoardUpdateRequest;
 import com.sparta.outsourcing.board.service.BoardService;
 import com.sparta.outsourcing.security.UserDetailsImpl;
 import com.sparta.outsourcing.user.entity.User;
@@ -44,4 +45,11 @@ public class BoardController {
         return ResponseEntity.ok(response);
     }
 
+    // 게시글 수정
+    @PutMapping("/{boardId}")
+    public ResponseEntity<String> updateBoard(@PathVariable Long boardId, @Valid @RequestBody BoardUpdateRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+        boardService.updateBoard(boardId, request, user);
+        return ResponseEntity.ok("게시글 수정이 완료되었습니다.");
+    }
 }

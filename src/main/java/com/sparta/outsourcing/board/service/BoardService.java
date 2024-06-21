@@ -3,6 +3,7 @@ package com.sparta.outsourcing.board.service;
 import com.sparta.outsourcing.board.dto.BoardCreateRequest;
 import com.sparta.outsourcing.board.dto.BoardDetailResponseDto;
 import com.sparta.outsourcing.board.dto.BoardListResponseDto;
+import com.sparta.outsourcing.board.dto.BoardUpdateRequest;
 import com.sparta.outsourcing.board.entity.Board;
 import com.sparta.outsourcing.board.repository.BoardRepository;
 import com.sparta.outsourcing.user.entity.User;
@@ -70,5 +71,15 @@ public class BoardService {
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, boardId + "번 게시글을 찾을 수 없습니다.");
         }
+    }
+
+    public void updateBoard(Long boardId, BoardUpdateRequest request, User user) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
+        if (!board.getUser().getId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "작성자만 수정 가능합니다.");
+        }
+        board.setTitle(request.getTitle());
+        board.setContent(request.getContent());
+        boardRepository.save(board);
     }
 }
