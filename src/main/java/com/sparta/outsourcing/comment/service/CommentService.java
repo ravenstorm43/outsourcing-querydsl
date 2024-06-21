@@ -9,8 +9,10 @@ import com.sparta.outsourcing.comment.repository.CommentRepository;
 import com.sparta.outsourcing.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -40,4 +42,21 @@ public class CommentService {
         return new CommentResponseDTO(saveComment);
     }
 
+    @Transactional
+    public CommentResponseDTO updateComment(Long boardId,Long commentId, CommentRequestDTO commentRequestDTO, User user) {
+        boardRepository.findById(boardId).orElseThrow(
+                () -> new IllegalArgumentException("선택한 게시물이 없습니다.")
+        );
+
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new IllegalArgumentException("조회한 댓글이 없습니다.")
+        );
+
+        if (Objects.equals(comment.getUser().getUserUid(), user.getUserUid())) {
+            comment.updateComment(commentRequestDTO);
+        } else {
+            throw new IllegalArgumentException("사용자 ID가 일치하지 않습니다.");
+        }
+        return new CommentResponseDTO(comment);
+    }
 }
