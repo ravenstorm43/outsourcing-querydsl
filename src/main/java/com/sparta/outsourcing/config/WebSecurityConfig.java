@@ -3,6 +3,7 @@ package com.sparta.outsourcing.config;
 import com.sparta.outsourcing.security.JwtAuthenticationFilter;
 import com.sparta.outsourcing.security.JwtAuthorizationFilter;
 import com.sparta.outsourcing.security.UserDetailsServiceImpl;
+import com.sparta.outsourcing.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
