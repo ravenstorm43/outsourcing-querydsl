@@ -22,7 +22,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<CommonResponse<Void>> signup(@RequestBody SignupRequestDto requestDto) {
+    public ResponseEntity<CommonResponse<Void>> signup(@RequestBody @Valid SignupRequestDto requestDto) {
         CommonResponse<Void> response = new CommonResponse<>("회원가입 성공", HttpStatus.OK.value());
         userService.signup(requestDto);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -34,6 +34,13 @@ public class UserController {
         userService.withdrawal(userDetails, requestDto);
         CommonResponse<Void> response = new CommonResponse<>("회원탈퇴 성공", HttpStatus.OK.value());
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        userService.logout(userDetails);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/refresh")
