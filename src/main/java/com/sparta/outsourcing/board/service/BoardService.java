@@ -47,7 +47,7 @@ public class BoardService {
                 .map(board -> new BoardListResponseDto.BoardData(
                         board.getId(),
                         board.getTitle(),
-                        board.getUser().getUsername(),
+                        board.getGeneratedname(),
                         board.getUpdatedAt()
                 ))
                 .collect(Collectors.toList());
@@ -65,7 +65,7 @@ public class BoardService {
             BoardDetailResponseDto.BoardData boardData = new BoardDetailResponseDto.BoardData(
                     board.getTitle(),
                     board.getContent(),
-                    board.getUser().getUsername(),
+                    board.getGeneratedname(),
                     board.getUpdatedAt()
             );
             return new BoardDetailResponseDto(200, "게시글 조회 성공", boardData);

@@ -16,9 +16,9 @@ public class Board extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String generatedname;
-
     private String title;
+
+    private String generatedname;
 
     @Column(columnDefinition = "TEXT")
     private String content;
