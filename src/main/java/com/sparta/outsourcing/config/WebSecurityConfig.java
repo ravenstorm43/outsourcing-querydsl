@@ -65,7 +65,8 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/api/users/signup", // 회원가입[POST]
                                 "/api/users/login", // 로그인[POST]
-                                "/api/users/refresh" // access 토큰 재발급[POST]
+                                "/api/users/refresh", // access 토큰 재발급[POST]
+                                "/api/users/logout" // logout[POST]
                         ).permitAll()
                         .requestMatchers(
                                 "/api/boards", // 게시글 전체 조회[GET]
@@ -75,11 +76,6 @@ public class WebSecurityConfig {
                                 "/api/boards/*/comments" // 댓글 전체 조회[GET]
                         ).permitAll()
                         .anyRequest().authenticated()
-        );
-
-        http.formLogin((formLogin) ->
-                formLogin
-                        .loginPage("/api/user/login-page").permitAll()
         );
 
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);

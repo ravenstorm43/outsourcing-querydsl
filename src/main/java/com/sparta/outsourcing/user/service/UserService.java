@@ -11,6 +11,7 @@ import com.sparta.outsourcing.user.dto.UserResponseDto;
 import com.sparta.outsourcing.user.entity.User;
 import com.sparta.outsourcing.user.entity.UserStatus;
 import com.sparta.outsourcing.user.repository.UserRepository;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -59,10 +60,14 @@ public class UserService {
     public void accessTokenReissue(String refreshToken, HttpServletResponse res) {
 
         if(!jwtUtil.validateToken(refreshToken)) {
-            throw new InvalidTokenException("재로그인 바람");
+            throw new InvalidTokenException("로그인이 필요합니다.");
         }
 
-        User user = userRepository.findByRefreshToken(refreshToken).orElseThrow(
+        String originalRefreshToken = jwtUtil.refreshTokenSubstring(refreshToken);
+        Claims userInfo = jwtUtil.getUserInfoFromToken(originalRefreshToken);
+        String userUid = userInfo.getSubject();
+
+        User user = userRepository.findByUserUid(userUid).orElseThrow(
                 () -> new NotFoundException("해당 유저의 리프레시 토큰 정보가 없습니다.")
         );
 
@@ -107,5 +112,13 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("사용자를 찾을 수 없습니다")
         );
+    }
+
+    @Transactional
+    public void logout(UserDetailsImpl userDetails) {
+        User user = userRepository.findById(userDetails.getUser().getId()).orElseThrow(
+                () -> new NotFoundException("사용자를 찾을 수 없습니다.")
+        );
+        user.updateRefreshToken(null);
     }
 }
