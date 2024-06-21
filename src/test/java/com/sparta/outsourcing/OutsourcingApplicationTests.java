@@ -15,4 +15,8 @@ class OutsourcingApplicationTests {
 	void generateNameTest() {
 		System.out.println(AnonymousNameGenerator.nameGenerate());
 	}
+	@Test
+	void boardUserTest() {
+
+	}
 }
