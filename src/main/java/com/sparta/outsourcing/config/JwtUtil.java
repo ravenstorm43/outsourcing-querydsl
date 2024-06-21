@@ -1,5 +1,6 @@
 package com.sparta.outsourcing.config;
 
+import com.sparta.outsourcing.user.entity.User;
 import com.sparta.outsourcing.user.entity.UserStatus;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
