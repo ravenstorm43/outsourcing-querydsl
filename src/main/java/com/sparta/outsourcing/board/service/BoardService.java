@@ -82,4 +82,12 @@ public class BoardService {
         board.setContent(request.getContent());
         boardRepository.save(board);
     }
+
+    public void deleteBoard(Long boardId, User user) { // 게시글 삭제 기능 추가
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
+        if (!board.getUser().getId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "작성자만 삭제 가능합니다.");
+        }
+        boardRepository.delete(board);
+    }
 }

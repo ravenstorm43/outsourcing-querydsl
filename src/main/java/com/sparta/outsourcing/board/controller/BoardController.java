@@ -52,4 +52,12 @@ public class BoardController {
         boardService.updateBoard(boardId, request, user);
         return ResponseEntity.ok("게시글 수정이 완료되었습니다.");
     }
+
+    // 게시글 삭제
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<String> deleteBoard(@PathVariable Long boardId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+        boardService.deleteBoard(boardId, user);
+        return ResponseEntity.ok("게시글이 삭제되었습니다.");
+    }
 }
