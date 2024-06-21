@@ -61,7 +61,6 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers(new IpAddressMatcher("192.168.1.3")).permitAll()
                         .requestMatchers("/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
                         .anyRequest().authenticated()
