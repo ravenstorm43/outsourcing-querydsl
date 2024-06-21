@@ -1,10 +1,8 @@
 package com.sparta.outsourcing.user.service;
 
 import com.sparta.outsourcing.config.JwtUtil;
-import com.sparta.outsourcing.exception.ConflictException;
+import com.sparta.outsourcing.exception.*;
 import com.sparta.outsourcing.security.UserDetailsImpl;
-import com.sparta.outsourcing.exception.IncorrectPasswordException;
-import com.sparta.outsourcing.exception.NotFoundException;
 import com.sparta.outsourcing.user.dto.SignupRequestDto;
 import com.sparta.outsourcing.user.dto.WithdrawRequestDto;
 import com.sparta.outsourcing.user.dto.UpdatePasswordDto;
@@ -19,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -47,16 +44,14 @@ public class UserService {
     @Transactional
     public void withdrawal(UserDetailsImpl userDetails, WithdrawRequestDto requestDto) {
 
-        if(!passwordEquals(userDetails, requestDto)) {
-            throw new IllegalArgumentException("비밀번호 확인 부탁합니다");
+        if(!passwordEquals(requestDto, userDetails)) {
+            throw new DataDifferentException("비밀번호가 다릅니다.");
         }
 
-        User user = userRepository.findByUserUidAndPassword(requestDto.getUserUid(), requestDto.getPassword()).orElseThrow(
-                () -> new NullPointerException("DB 조회 null인 경우")
+        User user = userRepository.findByUserUidAndPassword(requestDto.getUserUid(), userDetails.getPassword()).orElseThrow(
+                () -> new NotFoundException("조회된 회원의 정보가 없습니다.")
         );
-        if(!Objects.equals(user, userDetails.getUser())) {
-            throw new NullPointerException("같은거 없을 때 뜨는 예외임.");
-        }
+
         user.updateRole(UserStatus.WITHDRAW);
     }
 
@@ -64,16 +59,12 @@ public class UserService {
     public void accessTokenReissue(String refreshToken, HttpServletResponse res) {
 
         if(!jwtUtil.validateToken(refreshToken)) {
-            throw new RuntimeException("재로그인 바람");
+            throw new InvalidTokenException("재로그인 바람");
         }
 
         User user = userRepository.findByRefreshToken(refreshToken).orElseThrow(
-                () -> new NullPointerException("리프레시 토큰 존재하지 않음. not found exception")
+                () -> new NotFoundException("해당 유저의 리프레시 토큰 정보가 없습니다.")
         );
-
-        if(!Objects.equals(user.getRefreshToken(), refreshToken)) {
-            throw new RuntimeException("넘어온 토큰하고 DB조회 토큰하고 안맞음");
-        }
 
         String newAccessToken = jwtUtil.createAccessToken(user);
         String newRefreshToken = jwtUtil.createRefreshToken(user);
@@ -83,8 +74,8 @@ public class UserService {
         user.updateRefreshToken(newRefreshTokenOriginal);
     }
 
-    private boolean passwordEquals(UserDetailsImpl userDetails, WithdrawRequestDto requestDto) {
-        return passwordEncoder.matches(userDetails.getUser().getPassword(), requestDto.getPassword());
+    private boolean passwordEquals(WithdrawRequestDto requestDto, UserDetailsImpl userDetails) {
+        return passwordEncoder.matches(requestDto.getPassword(), userDetails.getUser().getPassword());
     }
 
 

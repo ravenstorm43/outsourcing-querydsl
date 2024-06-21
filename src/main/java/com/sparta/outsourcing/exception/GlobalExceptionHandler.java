@@ -46,4 +46,16 @@ public class GlobalExceptionHandler {
         CommonExceptionResponse response = new CommonExceptionResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<CommonExceptionResponse> invalidTokenException(InvalidTokenException ex) {
+        log.error("invalidTokenException : {}", ex.getMessage());
+        CommonExceptionResponse response = new CommonExceptionResponse(ex.getMessage(), HttpStatus.FORBIDDEN.value());
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+    @ExceptionHandler(DataDifferentException.class)
+    public ResponseEntity<CommonExceptionResponse> dataDifferentException(DataDifferentException ex) {
+        log.error("dataDifferentException : {}", ex.getMessage());
+        CommonExceptionResponse response = new CommonExceptionResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }
