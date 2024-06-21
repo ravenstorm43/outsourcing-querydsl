@@ -7,6 +7,7 @@ import com.sparta.outsourcing.user.dto.LoginRequestDto;
 import com.sparta.outsourcing.user.dto.LoginResponseDto;
 import com.sparta.outsourcing.user.entity.User;
 import com.sparta.outsourcing.user.entity.UserStatus;
+import com.sparta.outsourcing.user.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,14 +22,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 import java.util.Objects;
 
-@Slf4j
-
+@Slf4j(topic = "JwtAuthenticationFilter")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
         setFilterProcessesUrl("/api/users/login");
     }
 
@@ -54,24 +56,43 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
+    protected void successfulAuthentication(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain chain,
+            Authentication authResult) throws IOException
+    {
         User user = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
 
         if (isInvalidUser(user, response)) {
             return;
         }
+        String accessToken = jwtUtil.createAccessToken(user);
+        String refreshToken = jwtUtil.createRefreshToken(user);
 
-        String token = jwtUtil.createToken(user);
-        setSuccessfulResponse(user, token, response);
+        updateRefreshToken(user, refreshToken);
+        setSuccessfulResponse(user, accessToken, refreshToken, response);
     }
 
-    private void setSuccessfulResponse(User user, String token, HttpServletResponse response) throws IOException {
+    private void updateRefreshToken(User user, String refreshToken) {
+        String originalRefreshToken = jwtUtil.refreshTokenSubstring(refreshToken);
+        user.updateRefreshToken(originalRefreshToken);
+        userRepository.save(user);
+        log.info("{}", "refreshToken 업데이트 성공");
+    }
+
+    private void setSuccessfulResponse(
+            User user,
+            String accessToken,
+            String refreshToken,
+            HttpServletResponse response) throws IOException
+    {
         CommonResponse<LoginResponseDto> commonResponse = new CommonResponse<>(
                 "로그인 성공", HttpStatus.OK.value(),
                 new LoginResponseDto(user.getUserUid(), user.getUsername(), user.getRole())
         );
-
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
+        response.addHeader(JwtUtil.REFRESHTOKEN_HEADER, refreshToken);
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
         response.setStatus(HttpStatus.OK.value());
         response.setContentType("text/plain;charset=UTF-8");
         response.getWriter().write(new ObjectMapper().writeValueAsString(commonResponse));
