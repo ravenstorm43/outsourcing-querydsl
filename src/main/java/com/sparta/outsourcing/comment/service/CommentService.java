@@ -6,6 +6,7 @@ import com.sparta.outsourcing.comment.dto.CommentRequestDTO;
 import com.sparta.outsourcing.comment.dto.CommentResponseDTO;
 import com.sparta.outsourcing.comment.entity.Comment;
 import com.sparta.outsourcing.comment.repository.CommentRepository;
+import com.sparta.outsourcing.exception.NotFoundException;
 import com.sparta.outsourcing.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class CommentService {
     //댓글 전체 조회
     public List<CommentResponseDTO> viewAllComment(Long boardId) {
         boardRepository.findById(boardId).orElseThrow(
-                () -> new IllegalArgumentException("선택한 게시물이 없습니다.")
+                () -> new NotFoundException("선택한 게시물이 없습니다.")
         );
 
         List<Comment> comments = commentRepository.findAllByBoardId(boardId);
@@ -35,7 +36,7 @@ public class CommentService {
     // 댓글 작성
     public CommentResponseDTO createComment(Long boardId, CommentRequestDTO commentRequestDTO, User user) {
         Board board = boardRepository.findById(boardId).orElseThrow(
-                () -> new IllegalArgumentException("선택한 게시물이 없습니다.")
+                () -> new NotFoundException("선택한 게시물이 없습니다.")
         );
         Comment comment = new Comment(board, commentRequestDTO, user);
         Comment saveComment = commentRepository.save(comment);
@@ -45,17 +46,17 @@ public class CommentService {
     @Transactional
     public CommentResponseDTO updateComment(Long boardId,Long commentId, CommentRequestDTO commentRequestDTO, User user) {
         boardRepository.findById(boardId).orElseThrow(
-                () -> new IllegalArgumentException("선택한 게시물이 없습니다.")
+                () -> new NotFoundException("선택한 게시물이 없습니다.")
         );
 
         Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new IllegalArgumentException("조회한 댓글이 없습니다.")
+                () -> new NotFoundException("조회한 댓글이 없습니다.")
         );
 
         if (Objects.equals(comment.getUser().getUserUid(), user.getUserUid())) {
             comment.updateComment(commentRequestDTO);
         } else {
-            throw new IllegalArgumentException("사용자 ID가 일치하지 않습니다.");
+            throw new NotFoundException("사용자 ID가 일치하지 않습니다.");
         }
         return new CommentResponseDTO(comment);
     }
