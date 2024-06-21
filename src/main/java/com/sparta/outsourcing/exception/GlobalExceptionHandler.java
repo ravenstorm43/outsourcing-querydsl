@@ -1,15 +1,38 @@
 package com.sparta.outsourcing.exception;
 
 import com.sparta.outsourcing.exception.dto.CommonExceptionResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j(topic = "GlobalExceptionHandler")
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<CommonExceptionResponse> validationException(HttpServletRequest request, MethodArgumentNotValidException ex) {
+        BindingResult bindingResult = ex.getBindingResult();
+        StringBuilder builder = new StringBuilder();
+
+        FieldError fieldError = bindingResult.getFieldErrors().get(0);
+        String fieldName = fieldError.getField();
+
+        builder.append("[");
+        builder.append(fieldName);
+        builder.append("](은)는 ");
+        builder.append(fieldError.getDefaultMessage());
+        builder.append(" / 입력된 값: [");
+        builder.append(fieldError.getRejectedValue());
+        builder.append("]");
+
+        CommonExceptionResponse response = new CommonExceptionResponse(builder.toString(), HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 
     /**
      * [409] 이미 존재하는 값이 있는 경우

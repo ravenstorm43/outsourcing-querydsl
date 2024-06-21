@@ -7,6 +7,7 @@ import com.sparta.outsourcing.user.dto.SignupRequestDto;
 import com.sparta.outsourcing.user.dto.WithdrawRequestDto;
 import com.sparta.outsourcing.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
