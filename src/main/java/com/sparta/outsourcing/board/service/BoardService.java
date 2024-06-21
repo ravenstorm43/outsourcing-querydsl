@@ -6,6 +6,7 @@ import com.sparta.outsourcing.board.dto.BoardListResponseDto;
 import com.sparta.outsourcing.board.dto.BoardUpdateRequest;
 import com.sparta.outsourcing.board.entity.Board;
 import com.sparta.outsourcing.board.repository.BoardRepository;
+import com.sparta.outsourcing.comment.repository.CommentRepository;
 import com.sparta.outsourcing.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
