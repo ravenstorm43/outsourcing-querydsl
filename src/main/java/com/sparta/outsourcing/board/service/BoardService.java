@@ -5,6 +5,7 @@ import com.sparta.outsourcing.board.dto.BoardDetailResponseDto;
 import com.sparta.outsourcing.board.dto.BoardListResponseDto;
 import com.sparta.outsourcing.board.entity.Board;
 import com.sparta.outsourcing.board.repository.BoardRepository;
+import com.sparta.outsourcing.common.AnonymousNameGenerator;
 import com.sparta.outsourcing.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,6 +30,7 @@ public class BoardService {
         board.setTitle(request.getTitle());
         board.setContent(request.getContent());
         board.setUser(user);
+        board.setGeneratedname(AnonymousNameGenerator.nameGenerate());
         Board savedBoard = boardRepository.save(board);
         return savedBoard.getId();
     }
