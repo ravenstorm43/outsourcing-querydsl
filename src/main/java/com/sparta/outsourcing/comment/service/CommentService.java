@@ -61,4 +61,20 @@ public class CommentService {
         }
         return new CommentResponseDTO(comment);
     }
+
+    public void deleteComment(Long boardId, Long commentId, User user) {
+        boardRepository.findById(boardId).orElseThrow(
+                () -> new NotFoundException("선택한 게시물이 없습니다.")
+        );
+
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new NotFoundException("조회한 댓글이 없습니다.")
+        );
+
+        if (Objects.equals(comment.getUser().getUserUid(), user.getUserUid())) {
+            commentRepository.delete(comment);
+        } else {
+            throw new NotFoundException("사용자 ID가 일치하지 않습니다.");
+        }
+    }
 }
