@@ -43,6 +43,7 @@ public class CommentService {
         return new CommentResponseDTO(saveComment);
     }
 
+    // 댓글 수정
     @Transactional
     public CommentResponseDTO updateComment(Long boardId,Long commentId, CommentRequestDTO commentRequestDTO, User user) {
         boardRepository.findById(boardId).orElseThrow(
