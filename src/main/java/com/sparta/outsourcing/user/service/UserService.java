@@ -1,19 +1,21 @@
 package com.sparta.outsourcing.user.service;
 
-import com.sparta.outsourcing.exception.ConflictException;
-import com.sparta.outsourcing.exception.IncorrectPasswordException;
-import com.sparta.outsourcing.exception.NotFoundException;
+import com.sparta.outsourcing.config.JwtUtil;
+import com.sparta.outsourcing.exception.*;
+import com.sparta.outsourcing.security.UserDetailsImpl;
 import com.sparta.outsourcing.user.dto.SignupRequestDto;
+import com.sparta.outsourcing.user.dto.WithdrawRequestDto;
 import com.sparta.outsourcing.user.dto.UpdatePasswordDto;
 import com.sparta.outsourcing.user.dto.UpdateUserRequestDto;
 import com.sparta.outsourcing.user.dto.UserResponseDto;
 import com.sparta.outsourcing.user.entity.User;
 import com.sparta.outsourcing.user.entity.UserStatus;
 import com.sparta.outsourcing.user.repository.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -23,6 +25,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     public void signup(SignupRequestDto requestDto) {
         String password = passwordEncoder.encode(requestDto.getPassword());
@@ -35,9 +38,47 @@ public class UserService {
             }
             throw new ConflictException("중복된 사용자가 존재합니다.");
         });
-
         userRepository.save(new User(requestDto, password));
     }
+
+    @Transactional
+    public void withdrawal(UserDetailsImpl userDetails, WithdrawRequestDto requestDto) {
+
+        if(!passwordEquals(requestDto, userDetails)) {
+            throw new DataDifferentException("비밀번호가 다릅니다.");
+        }
+
+        User user = userRepository.findByUserUidAndPassword(requestDto.getUserUid(), userDetails.getPassword()).orElseThrow(
+                () -> new NotFoundException("조회된 회원의 정보가 없습니다.")
+        );
+
+        user.updateRole(UserStatus.WITHDRAW);
+    }
+
+    @Transactional
+    public void accessTokenReissue(String refreshToken, HttpServletResponse res) {
+
+        if(!jwtUtil.validateToken(refreshToken)) {
+            throw new InvalidTokenException("재로그인 바람");
+        }
+
+        User user = userRepository.findByRefreshToken(refreshToken).orElseThrow(
+                () -> new NotFoundException("해당 유저의 리프레시 토큰 정보가 없습니다.")
+        );
+
+        String newAccessToken = jwtUtil.createAccessToken(user);
+        String newRefreshToken = jwtUtil.createRefreshToken(user);
+        res.addHeader(JwtUtil.AUTHORIZATION_HEADER, newAccessToken);
+        res.addHeader(JwtUtil.REFRESHTOKEN_HEADER, newRefreshToken);
+        String newRefreshTokenOriginal = jwtUtil.refreshTokenSubstring(newRefreshToken);
+        user.updateRefreshToken(newRefreshTokenOriginal);
+    }
+
+    private boolean passwordEquals(WithdrawRequestDto requestDto, UserDetailsImpl userDetails) {
+        return passwordEncoder.matches(requestDto.getPassword(), userDetails.getUser().getPassword());
+    }
+
+
     public UserResponseDto getUser(User user) {
         return new UserResponseDto(user);
     }
