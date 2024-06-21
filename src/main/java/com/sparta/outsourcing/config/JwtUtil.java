@@ -19,9 +19,11 @@ import java.util.Date;
 public class JwtUtil {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String REFRESHTOKEN_HEADER = "RefreshToken";
     public static final String AUTHORIZATION_KEY = "auth";
     public static final String BEARER_PREFIX = "Bearer ";
     private final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
+    private final long REFRESH_TOKEN_TIME = 1209600000;
 
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -34,23 +36,51 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String createToken(User user) {
+    public String createToken(User user, long tokenTime) {
         Date date = new Date();
 
         return BEARER_PREFIX +
                 Jwts.builder()
                         .setSubject(user.getUserUid()) // 사용자 식별자값(ID)
                         .claim(AUTHORIZATION_KEY, user.getRole()) // 사용자 권한
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
+                        .setExpiration(new Date(date.getTime() + tokenTime)) // 만료 시간
                         .setIssuedAt(date) // 발급일
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘
                         .compact();
+    }
+
+    public String createToken2(User user, long tokenTime) {
+        Date date = new Date();
+
+        return BEARER_PREFIX +
+                Jwts.builder()
+                        .setSubject(user.getUserUid()) // 사용자 식별자값(ID)
+                        .claim(AUTHORIZATION_KEY, user.getRole()) // 사용자 권한
+                        .setExpiration(new Date(date.getTime() + tokenTime)) // 만료 시간
+                        .setIssuedAt(date) // 발급일
+                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘
+                        .compact();
+    }
+
+    public String createAccessToken(User user) {
+        return createToken(user, TOKEN_TIME);
+    }
+
+    public String createRefreshToken(User user) {
+        return createToken2(user, REFRESH_TOKEN_TIME);
     }
 
     public String getJwtFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
+        }
+        return null;
+    }
+
+    public String refreshTokenSubstring(String refreshToken) {
+        if (StringUtils.hasText(refreshToken) && refreshToken.startsWith(BEARER_PREFIX)) {
+            return refreshToken.substring(7);
         }
         return null;
     }
@@ -62,7 +92,8 @@ public class JwtUtil {
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
             log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
         } catch (ExpiredJwtException e) {
-            log.error("Expired JWT token, 만료된 JWT token 입니다.");
+            log.error("{}", "Expired JWT token, 만료된 JWT token 입니다.");
+            throw new RuntimeException("Expired JWT token, 만료된 JWT token 입니다.");
         } catch (UnsupportedJwtException e) {
             log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
         } catch (IllegalArgumentException e) {

@@ -23,12 +23,15 @@ public class User extends Timestamped {
     @Column(nullable = false)
     private String username;
 
+    @Column
+    private String intro;
+
+    @Column
+    private String refreshToken;
+
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserStatus role;
-
-    @Column
-    private String intro;
 
     public User(SignupRequestDto requestDto, String password) {
         this.userUid = requestDto.getUserUid();
@@ -36,5 +39,13 @@ public class User extends Timestamped {
         this.role = requestDto.getRole();
         this.intro = requestDto.getIntro();
         this.password = password;
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public void updateRole(UserStatus role) {
+        this.role = role;
     }
 }
