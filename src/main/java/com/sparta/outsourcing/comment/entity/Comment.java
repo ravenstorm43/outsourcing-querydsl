@@ -5,7 +5,7 @@ import com.sparta.outsourcing.comment.dto.CommentRequestDTO;
 import com.sparta.outsourcing.common.Timestamped;
 import com.sparta.outsourcing.user.entity.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +18,7 @@ public class Comment extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "공백이거나 null인 것은 불가합니다.")
+    @NotBlank(message = "공백이거나 null인 것은 불가합니다.")
     @Column(name = "comment", nullable = false)
     private String comment;
 
