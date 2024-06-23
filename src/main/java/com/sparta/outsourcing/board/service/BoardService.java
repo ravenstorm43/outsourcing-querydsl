@@ -46,7 +46,7 @@ public class BoardService {
         Page<Board> boardPage = boardRepository.findAll(pageable);
 
         if (page > 0 && page >= boardPage.getTotalPages()) { //잘못된 페이지 요청 시 예외 처리
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 페이지를 찾을 수 없습니다.");
+            throw new NotFoundException("해당 페이지를 찾을 수 없습니다.");
         }
 
         List<BoardListResponseDto.BoardData> boardDataList = boardPage.getContent().stream()
@@ -76,14 +76,14 @@ public class BoardService {
             );
             return new BoardDetailResponseDto(200, "게시글 조회 성공", boardData);
         } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, boardId + "번 게시글을 찾을 수 없습니다.");
+            throw new NotFoundException(boardId + "번 게시글을 찾을 수 없습니다.");
         }
     }
 
     public void updateBoard(Long boardId, BoardUpdateRequest request, User user) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
         if (!board.getUser().getId().equals(user.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "작성자만 수정 가능합니다.");
+            throw new ForbiddenException("작성자만 수정 가능합니다.");
         }
         board.setTitle(request.getTitle());
         board.setContent(request.getContent());
@@ -91,9 +91,9 @@ public class BoardService {
     }
 
     public void deleteBoard(Long boardId, User user) { // 게시글 삭제 기능 추가
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."));
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
         if (!board.getUser().getId().equals(user.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "작성자만 삭제 가능합니다.");
+            throw new ForbiddenException("작성자만 삭제 가능합니다.");
         }
         boardRepository.delete(board);
     }
