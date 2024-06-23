@@ -8,6 +8,8 @@ import com.sparta.outsourcing.board.entity.Board;
 import com.sparta.outsourcing.board.repository.BoardRepository;
 import com.sparta.outsourcing.comment.repository.CommentRepository;
 import com.sparta.outsourcing.common.AnonymousNameGenerator;
+import com.sparta.outsourcing.exception.ForbiddenException;
+import com.sparta.outsourcing.exception.NotFoundException;
 import com.sparta.outsourcing.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -33,6 +36,7 @@ public class BoardService {
         board.setContent(request.getContent());
         board.setUser(user);
         board.setGeneratedname(AnonymousNameGenerator.nameGenerate());
+        board.setLike(0L);
         Board savedBoard = boardRepository.save(board);
         return savedBoard.getId();
     }
@@ -92,5 +96,24 @@ public class BoardService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "작성자만 삭제 가능합니다.");
         }
         boardRepository.delete(board);
+    }
+
+    @Transactional
+    public void decreaseBoardLike(Long contentId) {
+        Board board = boardRepository.findById(contentId).orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
+        board.decreaseLike();
+    }
+
+    @Transactional
+    public void increaseBoardLike(Long contentId) {
+        Board board = boardRepository.findById(contentId).orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
+        board.increaseLike();
+    }
+
+    public void validateBoardLike(Long userId, Long contentId) {
+        Board board = boardRepository.findById(contentId).orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
+        if(board.getUser().getId().equals(userId)) {
+            throw new ForbiddenException("해당 게시글의 작성자입니다.");
+        }
     }
 }
