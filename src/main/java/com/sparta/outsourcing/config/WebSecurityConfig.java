@@ -65,6 +65,7 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/api/users/signup", // 회원가입[POST]
                                 "/api/users/login", // 로그인[POST]
+                                "/api/users/oauth", // 로그인[POST]
                                 "/api/users/refresh", // access 토큰 재발급[POST]
                                 "/api/users/logout" // logout[POST]
                         ).permitAll()
