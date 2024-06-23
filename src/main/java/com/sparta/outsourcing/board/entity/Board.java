@@ -30,6 +30,17 @@ public class Board extends Timestamped {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(name = "likes")
+    private Long like;
+
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
+
+    public void decreaseLike() {
+        this.like--;
+    }
+
+    public void increaseLike() {
+        this.like++;
+    }
 }

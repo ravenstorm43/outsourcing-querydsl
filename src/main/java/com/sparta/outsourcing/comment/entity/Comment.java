@@ -33,14 +33,26 @@ public class Comment extends Timestamped {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(name = "likes")
+    private Long like;
+
     public Comment(Board board, CommentRequestDTO commentRequestDTO, User user){
         this.board = board;
         this.comment = commentRequestDTO.getComment();
         this.generatedname = AnonymousNameGenerator.nameGenerate();
         this.user = user;
+        this.like = 0L;
     }
 
     public void updateComment(CommentRequestDTO requestDTO) {
         this.comment = requestDTO.getComment();
+    }
+
+    public void decreaseLike() {
+        this.like--;
+    }
+
+    public void increaseLike() {
+        this.like++;
     }
 }

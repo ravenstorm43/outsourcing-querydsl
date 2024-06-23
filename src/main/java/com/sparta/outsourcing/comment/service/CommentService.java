@@ -6,6 +6,7 @@ import com.sparta.outsourcing.comment.dto.CommentRequestDTO;
 import com.sparta.outsourcing.comment.dto.CommentResponseDTO;
 import com.sparta.outsourcing.comment.entity.Comment;
 import com.sparta.outsourcing.comment.repository.CommentRepository;
+import com.sparta.outsourcing.exception.ForbiddenException;
 import com.sparta.outsourcing.exception.NotFoundException;
 import com.sparta.outsourcing.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -75,6 +76,23 @@ public class CommentService {
             commentRepository.delete(comment);
         } else {
             throw new NotFoundException("사용자 ID가 일치하지 않습니다.");
+        }
+    }
+
+    public void decreaseCommentLike(Long contentId) {
+        Comment comment = commentRepository.findById(contentId).orElseThrow(() -> new NotFoundException("댓글을 찾을 수 없습니다."));
+        comment.decreaseLike();
+    }
+
+    public void increaseCommentLike(Long contentId) {
+        Comment comment = commentRepository.findById(contentId).orElseThrow(() -> new NotFoundException("댓글을 찾을 수 없습니다."));
+        comment.increaseLike();
+    }
+
+    public void validateCommentLike(Long userId, Long contentId) {
+        Comment comment = commentRepository.findById(contentId).orElseThrow(() -> new NotFoundException("댓글을 찾을 수 없습니다."));
+        if(comment.getUser().getId().equals(userId)) {
+            throw new ForbiddenException("해당 댓글의 작성자입니다.");
         }
     }
 }

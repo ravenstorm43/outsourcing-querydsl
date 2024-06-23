@@ -71,10 +71,12 @@ public class WebSecurityConfig {
                         ).permitAll()
                         .requestMatchers(
                                 "/api/boards", // 게시글 전체 조회[GET]
-                                "/api/boards/*" // 게시글 선택 조회[GET]
+                                "/api/boards/*", // 게시글 선택 조회[GET]
+                                "/api/boards/*/likes/count" // 게시글 좋아요 조회[GET]
                         ).permitAll()
                         .requestMatchers(
-                                "/api/boards/*/comments" // 댓글 전체 조회[GET]
+                                "/api/boards/*/comments", // 댓글 전체 조회[GET]
+                                "/api/boards/*/comments/*/likes/count" // 댓글 좋아요 조회[GET]
                         ).permitAll()
                         .anyRequest().authenticated()
         );
