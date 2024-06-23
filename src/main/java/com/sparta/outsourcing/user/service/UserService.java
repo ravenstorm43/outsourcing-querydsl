@@ -58,16 +58,17 @@ public class UserService {
 
     @Transactional
     public void accessTokenReissue(String refreshToken, HttpServletResponse res) {
+        String originalRefreshToken = jwtUtil.refreshTokenSubstring(refreshToken);
 
-        if(!jwtUtil.validateToken(refreshToken)) {
+        if(!jwtUtil.validateToken(originalRefreshToken)) {
             throw new InvalidTokenException("로그인이 필요합니다.");
         }
 
-        String originalRefreshToken = jwtUtil.refreshTokenSubstring(refreshToken);
-        Claims userInfo = jwtUtil.getUserInfoFromToken(originalRefreshToken);
-        String userUid = userInfo.getSubject();
+//        String originalRefreshToken = jwtUtil.refreshTokenSubstring(refreshToken);
+//        Claims userInfo = jwtUtil.getUserInfoFromToken(originalRefreshToken);
+//        String userUid = userInfo.getSubject();
 
-        User user = userRepository.findByUserUid(userUid).orElseThrow(
+        User user = userRepository.findByRefreshToken(originalRefreshToken).orElseThrow(
                 () -> new NotFoundException("해당 유저의 리프레시 토큰 정보가 없습니다.")
         );
 
