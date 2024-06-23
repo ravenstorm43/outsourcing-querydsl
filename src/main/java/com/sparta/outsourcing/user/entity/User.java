@@ -1,8 +1,11 @@
 package com.sparta.outsourcing.user.entity;
 
 import com.sparta.outsourcing.common.Timestamped;
+import com.sparta.outsourcing.oauth.dto.KakaoUserInfoDto;
 import com.sparta.outsourcing.user.dto.SignupRequestDto;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import com.sparta.outsourcing.user.dto.UpdateUserRequestDto;
@@ -40,6 +43,12 @@ public class User extends Timestamped {
         this.username = requestDto.getUsername();
         this.role = requestDto.getRole();
         this.intro = requestDto.getIntro();
+        this.password = password;
+    }
+    public User(KakaoUserInfoDto requestDto, String password, UserStatus role) {
+        this.userUid = requestDto.getId().toString();
+        this.username = requestDto.getUsername();
+        this.role = role;
         this.password = password;
     }
     public void updateUser(UpdateUserRequestDto requestDto) {
