@@ -64,12 +64,11 @@ public class UserService {
             throw new InvalidTokenException("로그인이 필요합니다.");
         }
 
-//        String originalRefreshToken = jwtUtil.refreshTokenSubstring(refreshToken);
-//        Claims userInfo = jwtUtil.getUserInfoFromToken(originalRefreshToken);
-//        String userUid = userInfo.getSubject();
+        Claims userInfo = jwtUtil.getUserInfoFromToken(originalRefreshToken);
+        String userUid = userInfo.getSubject();
 
-        User user = userRepository.findByRefreshToken(originalRefreshToken).orElseThrow(
-                () -> new NotFoundException("해당 유저의 리프레시 토큰 정보가 없습니다.")
+        User user = userRepository.findByUserUid(userUid).orElseThrow(
+                () -> new NotFoundException("해당 유저의 정보가 없습니다.")
         );
 
         String newAccessToken = jwtUtil.createAccessToken(user);
