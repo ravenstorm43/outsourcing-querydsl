@@ -37,7 +37,15 @@ public class BoardController {
         BoardListResponseDto response = boardService.getAllBoards(page -1, size);
         return ResponseEntity.ok(response);
     }
-
+    // 좋아요를 한 게시글 조회 : 좋아요를 한 본인만 조회가능
+    @GetMapping("/users")
+    public ResponseEntity<BoardListResponseDto> getBoardListByUser(
+            @RequestParam(defaultValue = "1") int page, //페이지 번호 파라미터
+            @RequestParam(defaultValue = "5") int size,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) { //페이지당 갯수 파라미터
+        BoardListResponseDto response = boardService.getAllBoardsByLikedUser(userDetails.getUser(),page -1, size);
+        return ResponseEntity.ok(response);
+    }
     // 게시글 선택 조회 : 누구든 조회 가능, 하나의 게시글만 조회
     @GetMapping("/{boardId}")
     public ResponseEntity<BoardDetailResponseDto> getBoardDetail(@PathVariable Long boardId) {

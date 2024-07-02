@@ -4,6 +4,7 @@ import com.sparta.outsourcing.board.service.BoardService;
 import com.sparta.outsourcing.comment.service.CommentService;
 import com.sparta.outsourcing.like.entity.Like;
 import com.sparta.outsourcing.like.entity.LikeType;
+import com.sparta.outsourcing.like.entity.QLike;
 import com.sparta.outsourcing.like.repository.LikeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

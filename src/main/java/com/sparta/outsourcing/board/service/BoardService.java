@@ -64,6 +64,29 @@ public class BoardService {
 
         return new BoardListResponseDto(200, "전체 게시글 조회 성공", boardDataList);
     }
+    public BoardListResponseDto getAllBoardsByLikedUser(User user, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Board> boardPage = boardRepository.findAllByLikedUserIds(user.getId(), pageable);
+
+        if (page > 0 && page >= boardPage.getTotalPages()) { //잘못된 페이지 요청 시 예외 처리
+            throw new NotFoundException("해당 페이지를 찾을 수 없습니다.");
+        }
+
+        List<BoardListResponseDto.BoardData> boardDataList = boardPage.getContent().stream()
+                .map(board -> new BoardListResponseDto.BoardData(
+                        board.getId(),
+                        board.getTitle(),
+                        board.getGeneratedname(),
+                        board.getUpdatedAt()
+                ))
+                .collect(Collectors.toList());
+
+        if (boardDataList.isEmpty()) { //빈 페이지 메시지
+            return new BoardListResponseDto(200, "현재 페이지에 게시글이 없습니다.", boardDataList);
+        }
+
+        return new BoardListResponseDto(200, "전체 게시글 조회 성공", boardDataList);
+    }
     public BoardDetailResponseDto getBoardDetail(Long boardId) {
         Optional<Board> optionalBoard = boardRepository.findById(boardId);
         if (optionalBoard.isPresent()) {
