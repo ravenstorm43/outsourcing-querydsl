@@ -24,8 +24,14 @@ public class CommentController {
 
     //Comment 전체 조회
     @GetMapping("/boards/{boardId}/comments")
-    public ResponseEntity<CommonResponse<List<CommentResponseDTO>>> viewAllComment(@PathVariable(value = "boardId") Long boardId) {
-        List<CommentResponseDTO> responseDTOList = commentService.viewAllComment(boardId);
+    public ResponseEntity<CommonResponse<List<CommentResponseDTO>>> viewAllComment(@PathVariable(value = "boardId") Long boardId,
+                                                                                   @RequestParam(defaultValue = "1") int page, //페이지 번호 파라미터
+                                                                                   @RequestParam(defaultValue = "5") int size) { //페이지당 갯수 파라미터
+        List<CommentResponseDTO> responseDTOList = commentService.viewAllComment(boardId, page - 1, size);
+        if(responseDTOList.isEmpty()) {
+            CommonResponse<List<CommentResponseDTO>> response = new CommonResponse<>("현재 페이지에 댓글이 없습니다.", HttpStatus.OK.value(),responseDTOList);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
         CommonResponse<List<CommentResponseDTO>> response = new CommonResponse<>("댓글조회 성공", HttpStatus.OK.value(),responseDTOList);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

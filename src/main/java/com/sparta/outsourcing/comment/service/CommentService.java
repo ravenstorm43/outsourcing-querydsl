@@ -31,13 +31,21 @@ public class CommentService {
 
 
     //댓글 전체 조회
-    public List<CommentResponseDTO> viewAllComment(Long boardId) {
+    public List<CommentResponseDTO> viewAllComment(Long boardId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
         boardRepository.findById(boardId).orElseThrow(
                 () -> new NotFoundException("선택한 게시물이 없습니다.")
         );
 
-        List<Comment> comments = commentRepository.findAllByBoardId(boardId);
-        return comments.stream().map(CommentResponseDTO::new).toList();
+        Page<Comment> comments = commentRepository.findAllByBoardId(boardId, pageable);
+        if (page > 0 && page >= comments.getTotalPages()) { //잘못된 페이지 요청 시 예외 처리
+            throw new NotFoundException("해당 페이지를 찾을 수 없습니다.");
+        }
+        List<CommentResponseDTO> commentDataList = comments.stream().map(CommentResponseDTO::new).toList();
+        if (commentDataList.isEmpty()) { //빈 페이지 메시지
+            return new ArrayList<>();
+        }
+        return commentDataList;
     }
     public List<CommentResponseDTO> viewAllCommentByLikedUser(User user, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
