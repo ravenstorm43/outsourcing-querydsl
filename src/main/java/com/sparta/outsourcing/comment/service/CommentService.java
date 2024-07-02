@@ -1,5 +1,6 @@
 package com.sparta.outsourcing.comment.service;
 
+import com.sparta.outsourcing.board.dto.BoardListResponseDto;
 import com.sparta.outsourcing.board.entity.Board;
 import com.sparta.outsourcing.board.repository.BoardRepository;
 import com.sparta.outsourcing.comment.dto.CommentRequestDTO;
@@ -10,9 +11,14 @@ import com.sparta.outsourcing.exception.ForbiddenException;
 import com.sparta.outsourcing.exception.NotFoundException;
 import com.sparta.outsourcing.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,6 +38,18 @@ public class CommentService {
 
         List<Comment> comments = commentRepository.findAllByBoardId(boardId);
         return comments.stream().map(CommentResponseDTO::new).toList();
+    }
+    public List<CommentResponseDTO> viewAllCommentByLikedUser(User user, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Comment> commentPage = commentRepository.findAllByLikedUserIds(user.getId(), pageable);
+        if (page > 0 && page >= commentPage.getTotalPages()) { //잘못된 페이지 요청 시 예외 처리
+            throw new NotFoundException("해당 페이지를 찾을 수 없습니다.");
+        }
+        List<CommentResponseDTO> commentDataList = commentPage.stream().map(CommentResponseDTO::new).toList();
+        if (commentDataList.isEmpty()) { //빈 페이지 메시지
+            return new ArrayList<>();
+        }
+        return commentDataList;
     }
 
     // 댓글 작성

@@ -30,6 +30,20 @@ public class CommentController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    //좋아요를 한 Comment 조회
+    @GetMapping("/boards/comments/users")
+    public ResponseEntity<CommonResponse<List<CommentResponseDTO>>> viewAllCommentByLikedUser(@RequestParam(defaultValue = "1") int page, //페이지 번호 파라미터
+                                                                                              @RequestParam(defaultValue = "5") int size, //페이지당 갯수 파라미터
+                                                                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<CommentResponseDTO> responseDTOList = commentService.viewAllCommentByLikedUser(userDetails.getUser(), page - 1, size);
+        if(responseDTOList.isEmpty()) {
+            CommonResponse<List<CommentResponseDTO>> response = new CommonResponse<>("현재 페이지에 댓글이 없습니다.", HttpStatus.OK.value(),responseDTOList);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        CommonResponse<List<CommentResponseDTO>> response = new CommonResponse<>("댓글조회 성공", HttpStatus.OK.value(),responseDTOList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     //Comment 작성
     @PostMapping("/boards/{boardId}/comments")
     public ResponseEntity<CommonResponse<CommentResponseDTO>> createComment(@PathVariable(value = "boardId") Long boardId,
