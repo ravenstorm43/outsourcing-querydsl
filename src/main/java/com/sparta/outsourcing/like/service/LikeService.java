@@ -19,8 +19,11 @@ public class LikeService {
     private final LikeRepository likeRepository;
     private final BoardService boardService;
     private final CommentService commentService;
-    public int getLikesCount(Long contentId, LikeType contentType) {
+    public Long getLikesCount(Long contentId, LikeType contentType) {
         return likeRepository.countByContentIdAndContentType(contentId, contentType);
+    }
+    public Long getLikesCountByUser(Long userId, LikeType contentType) {
+        return likeRepository.countByUserIdAndContentType(userId, contentType);
     }
 
     public ResponseEntity<String> toggleBoardLike(Long userId, Long contentId) {

@@ -14,14 +14,25 @@ import static com.sparta.outsourcing.like.entity.QLike.like;
 public class LikeCustomRepositoryImpl implements LikeCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
     @Override
-    public int countByContentIdAndContentType(Long contentId, LikeType contentType) {
-        return jpaQueryFactory.select(Wildcard.countAsInt)
+    public Long countByContentIdAndContentType(Long contentId, LikeType contentType) {
+        return jpaQueryFactory.select(Wildcard.count)
                 .from(like)
                 .where(
                     like.contentId.eq(contentId),
                     like.contentType.eq(contentType)
                 )
-                .fetchOne();
+                .fetch().get(0);
+    }
+
+    @Override
+    public Long countByUserIdAndContentType(Long userId, LikeType contentType) {
+        return jpaQueryFactory.select(Wildcard.count)
+                .from(like)
+                .where(
+                        like.userId.eq(userId),
+                        like.contentType.eq(contentType)
+                )
+                .fetch().get(0);
     }
 
     @Override

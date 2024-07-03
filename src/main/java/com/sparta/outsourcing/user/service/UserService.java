@@ -2,6 +2,8 @@ package com.sparta.outsourcing.user.service;
 
 import com.sparta.outsourcing.config.JwtUtil;
 import com.sparta.outsourcing.exception.*;
+import com.sparta.outsourcing.like.entity.LikeType;
+import com.sparta.outsourcing.like.service.LikeService;
 import com.sparta.outsourcing.security.UserDetailsImpl;
 import com.sparta.outsourcing.user.dto.SignupRequestDto;
 import com.sparta.outsourcing.user.dto.WithdrawRequestDto;
@@ -26,6 +28,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final LikeService likeService;
     private final JwtUtil jwtUtil;
 
     public void signup(SignupRequestDto requestDto) {
@@ -85,7 +88,9 @@ public class UserService {
 
 
     public UserResponseDto getUser(User user) {
-        return new UserResponseDto(user);
+        Long boardLikeCount = likeService.getLikesCountByUser(user.getId(), LikeType.BOARD);
+        Long commentLikeCount = likeService.getLikesCountByUser(user.getId(), LikeType.COMMENT);
+        return new UserResponseDto(user, boardLikeCount, commentLikeCount);
     }
 
     @Transactional

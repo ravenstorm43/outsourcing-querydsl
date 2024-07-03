@@ -6,6 +6,5 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class LikeCountResponseDto {
-
-    private int count;
+    private Long count;
 }
