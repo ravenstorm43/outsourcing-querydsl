@@ -6,4 +6,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface BoardCustomRepository {
     Page<Board> findAllByLikedUserIds(Long userId, Pageable pageable);
+
+    Page<Board> getAllBoardsByFollowedUsers(Long userId, Pageable pageable);
 }
